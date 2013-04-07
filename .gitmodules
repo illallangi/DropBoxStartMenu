@@ -1,0 +1,3 @@
+[submodule "tools/TeamCityScripts"]
+	path = tools/TeamCityScripts
+	url = https://github.com/illallangi/TeamCityScripts.git
