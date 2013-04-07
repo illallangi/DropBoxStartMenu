@@ -1,0 +1,128 @@
+<?define Manufacturer="Illallangi Enterprises" ?>
+<?define AppName="DropBox Start Menu Linker"?>
+<?define ProductId="{adeb723c-a364-48e7-be3a-3265a6ffbf69}" ?>
+<?define UpgradeCode="{5ea91ba5-099e-4f8a-ba63-9802027b43b3}" ?>
+<?define src="..\Illallangi.DropBox.StartMenu" ?>
+<?define bin="$(var.src)\bin\debug" ?>
+<?include ../_Version.wxi ?>
+<Wix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Name="$(var.AppName) $(var.Version)"
+           Manufacturer="$(var.Manufacturer)"
+           Version="$(var.Version)"
+           Id="$(var.ProductId)"
+           UpgradeCode="$(var.UpgradeCode)"
+           Language="1033"
+           Codepage="1252" >
+
+    <Package InstallerVersion="200" Compressed="yes" Id="*" />
+    <Media Id="1" Cabinet="package.cab" EmbedCab="yes" />
+
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion Minimum="$(var.Version)"
+                      IncludeMinimum="no"
+                      OnlyDetect="yes"
+                      Language="1033"
+                      Property="NEWPRODUCTFOUND"/>
+
+      <UpgradeVersion Maximum="$(var.Version)"
+                      IncludeMaximum="no"
+                      OnlyDetect="no"
+                      Language="1033"
+                      Property="OLDPRODUCTFOUND"/>
+    </Upgrade>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Component Id="Empty" Guid="" />
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ProgramMenuManufacturerFolder" Name="$(var.Manufacturer)">
+          <Directory Id="ProgramMenuApplicationFolder" Name="$(var.AppName) $(var.Version)"/>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramFilesFolder" >
+        <Directory Id="ProgramFilesManufacturerFolder" Name="$(var.Manufacturer)">
+          <Directory Id="SOFTWAREDIR" Name="$(var.AppName) $(var.Version)">
+            <Directory Id="RuntimeFolder" Name="runtime" />
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Icon Id="favicon.ico" SourceFile="$(var.src)\favicon.ico" />
+    <Property Id="ALLUSERS" Value="1" />
+    <Property Id="ARPPRODUCTICON" Value="favicon.ico" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+    <Property Id="LAUNCHFLUX" Value="1" />
+
+    <Feature Id='Complete' Level='1' Title='$(var.AppName)'>
+      <Component Id="IllallangiDropBoxStartMenuExeComponent" Directory="SOFTWAREDIR">
+        <File Id="IllallangiDropBoxStartMenuExeFile" KeyPath="yes" Source="$(var.bin)\Illallangi.DropBox.StartMenu.exe">
+          <Shortcut Id="IllallangiDropBoxStartMenuExeShortcut"
+                    Name="DropBox Start Menu Linker"
+                    Description="Creates shortcuts in your Start Menu for portable applications in your DropBox folder"
+                    Directory="ProgramMenuApplicationFolder"
+                    WorkingDirectory="SOFTWAREDIR"
+                    Arguments="[ARGS]"
+                    Advertise="yes"
+                    Icon="favicon.ico" />
+        </File>
+        <File Id="IllallangiDropBoxStartMenuExeConfigFile" Source="$(var.bin)\Illallangi.DropBox.StartMenu.exe.config" />
+        <RemoveFolder Id="ProgramMenuApplicationDelete"
+                      Directory="ProgramMenuApplicationFolder"
+                      On="uninstall" />
+        <RemoveFolder Id="ProgramMenuManufacturerDelete"
+                      Directory="ProgramMenuManufacturerFolder"
+                      On="uninstall" />
+      </Component>
+      
+      <Component Id="RunRegistryEntries" Directory="TARGETDIR" Guid="{c1a54bd5-c918-4fab-b1d8-3d025ec14395}">
+        <RegistryKey Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Run">
+          <RegistryValue Type="string" Name="Illallangi.DropBox.StartMenu" Value="&quot;[SOFTWAREDIR]Illallangi.DropBox.StartMenu.exe&quot;" />
+        </RegistryKey>
+      </Component>
+      <Component Id="ActiveSetup" Directory="TARGETDIR" Guid="{693c357b-1633-40f3-a8c7-6e3cb804476a}">
+        <RegistryKey Root="HKLM"
+							 Key="Software\Microsoft\Active Setup\Installed Components\$(var.UpgradeCode)">
+          <RegistryValue Type="string" Value="$(var.AppName)" />
+          <RegistryValue Type="string" Name="Version" Value="$(var.Version)" />
+          <RegistryValue Type="string" Name="StubPath" Value="msiexec.exe /fpu $(var.ProductId) /qn" />
+        </RegistryKey>
+      </Component>
+      
+      <ComponentRef Id='Empty' />
+    </Feature>
+
+    <UI Id="Minimal">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WixUI_Mode" Value="Minimal" />
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+      <DialogRef Id="WelcomeDlg" />
+      <DialogRef Id="VerifyReadyDlg" />
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg">1</Publish>
+      <Publish Dialog='ExitDialog' Control='Finish' Event='EndDialog' Value='Return'>1</Publish>
+    </UI>
+
+    <UIRef Id="WixUI_Common" />
+
+    <CustomAction Id="PreventDowngrading" Error="Newer version already installed." />
+
+    <InstallExecuteSequence>
+      <RemoveExistingProducts After="InstallInitialize" />
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+    </InstallUISequence>
+  </Product>
+</Wix>
