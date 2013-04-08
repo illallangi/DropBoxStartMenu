@@ -1,10 +1,10 @@
 <?define Manufacturer="Illallangi Enterprises" ?>
 <?define AppName="DropBox Start Menu Linker"?>
+<?define Version="0.0.0.0"?>
 <?define ProductId="{adeb723c-a364-48e7-be3a-3265a6ffbf69}" ?>
 <?define UpgradeCode="{5ea91ba5-099e-4f8a-ba63-9802027b43b3}" ?>
 <?define src="..\Illallangi.DropBox.StartMenu" ?>
 <?define bin="$(var.src)\bin\debug" ?>
-<?include ../_Version.wxi ?>
 <Wix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Name="$(var.AppName) $(var.Version)"
            Manufacturer="$(var.Manufacturer)"

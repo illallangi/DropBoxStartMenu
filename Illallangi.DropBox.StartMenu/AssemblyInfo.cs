@@ -23,5 +23,8 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("5bd68165-52d5-4190-9640-fc2d4e197956")]
 
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: AssemblyFileVersion("0.0.0.0")]
+
 [assembly: log4net.Config.Repository("Illallangi.DropBox.StartMenu")]
 [assembly: log4net.Config.XmlConfigurator]

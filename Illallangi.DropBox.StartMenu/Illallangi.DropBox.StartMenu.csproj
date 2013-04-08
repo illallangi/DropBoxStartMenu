@@ -67,9 +67,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\_Version.cs">
-      <Link>_Version.cs</Link>
-    </Compile>
     <Compile Include="IDriver.cs" />
     <Compile Include="ProgramModule.cs" />
     <Compile Include="Program.cs" />
