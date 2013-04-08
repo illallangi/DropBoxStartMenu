@@ -1,6 +1,6 @@
 <?define Manufacturer="Illallangi Enterprises" ?>
 <?define AppName="DropBox Start Menu Linker"?>
-<?define Version="0.0.0.0"?>
+<?define Version="0.1.0.0"?>
 <?define ProductId="{adeb723c-a364-48e7-be3a-3265a6ffbf69}" ?>
 <?define UpgradeCode="{5ea91ba5-099e-4f8a-ba63-9802027b43b3}" ?>
 <?define src="..\Illallangi.DropBox.StartMenu" ?>
