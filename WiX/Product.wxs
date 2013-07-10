@@ -3,7 +3,7 @@
 <?define Version="0.1.0.0"?>
 <?define ProductId="{adeb723c-a364-48e7-be3a-3265a6ffbf69}" ?>
 <?define UpgradeCode="{5ea91ba5-099e-4f8a-ba63-9802027b43b3}" ?>
-<?define src="..\Illallangi.DropBox.StartMenu" ?>
+<?define src="..\Illallangi.DropBoxStartMenu" ?>
 <?define bin="$(var.src)\bin\debug" ?>
 <Wix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Name="$(var.AppName) $(var.Version)"
@@ -55,7 +55,7 @@
 
     <Feature Id='Complete' Level='1' Title='$(var.AppName)'>
       <Component Id="IllallangiDropBoxStartMenuExeComponent" Directory="SOFTWAREDIR">
-        <File Id="IllallangiDropBoxStartMenuExeFile" KeyPath="yes" Source="$(var.bin)\Illallangi.DropBox.StartMenu.exe">
+        <File Id="IllallangiDropBoxStartMenuExeFile" KeyPath="yes" Source="$(var.bin)\Illallangi.DropBoxStartMenu.exe">
           <Shortcut Id="IllallangiDropBoxStartMenuExeShortcut"
                     Name="DropBox Start Menu Linker"
                     Description="Creates shortcuts in your Start Menu for portable applications in your DropBox folder"
@@ -65,7 +65,7 @@
                     Advertise="yes"
                     Icon="favicon.ico" />
         </File>
-        <File Id="IllallangiDropBoxStartMenuExeConfigFile" Source="$(var.bin)\Illallangi.DropBox.StartMenu.exe.config" />
+        <File Id="IllallangiDropBoxStartMenuExeConfigFile" Source="$(var.bin)\Illallangi.DropBoxStartMenu.exe.config" />
         <RemoveFolder Id="ProgramMenuApplicationDelete"
                       Directory="ProgramMenuApplicationFolder"
                       On="uninstall" />
