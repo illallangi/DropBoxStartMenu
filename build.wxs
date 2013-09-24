@@ -1,12 +1,11 @@
 <?define Manufacturer="Illallangi Enterprises" ?>
 <?define AppName="DropBox Start Menu Linker"?>
-<?define Version="0.1.0.0"?>
+<?define Version="0.0.0.1"?>
 <?define ProductId="{adeb723c-a364-48e7-be3a-3265a6ffbf69}" ?>
 <?define UpgradeCode="{5ea91ba5-099e-4f8a-ba63-9802027b43b3}" ?>
-<?define src="..\Illallangi.DropBoxStartMenu" ?>
-<?define bin="$(var.src)\bin\debug" ?>
+
 <Wix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Name="$(var.AppName) $(var.Version)"
+  <Product Name="$(var.AppName) $(sys.BUILDARCH) v$(var.Version)"
            Manufacturer="$(var.Manufacturer)"
            Version="$(var.Version)"
            Id="$(var.ProductId)"
@@ -47,15 +46,14 @@
       </Directory>
     </Directory>
 
-    <Icon Id="favicon.ico" SourceFile="$(var.src)\favicon.ico" />
+    <Icon Id="favicon.ico" SourceFile="$(var.favicon)" />
     <Property Id="ALLUSERS" Value="1" />
     <Property Id="ARPPRODUCTICON" Value="favicon.ico" />
     <Property Id="ARPNOMODIFY" Value="1" />
-    <Property Id="LAUNCHFLUX" Value="1" />
 
     <Feature Id='Complete' Level='1' Title='$(var.AppName)'>
       <Component Id="IllallangiDropBoxStartMenuExeComponent" Directory="SOFTWAREDIR">
-        <File Id="IllallangiDropBoxStartMenuExeFile" KeyPath="yes" Source="$(var.bin)\Illallangi.DropBoxStartMenu.exe">
+        <File Id="IllallangiDropBoxStartMenuExeFile" KeyPath="yes" Source="$(var.source)\Illallangi.DropBoxStartMenu.exe">
           <Shortcut Id="IllallangiDropBoxStartMenuExeShortcut"
                     Name="DropBox Start Menu Linker"
                     Description="Creates shortcuts in your Start Menu for portable applications in your DropBox folder"
@@ -65,7 +63,7 @@
                     Advertise="yes"
                     Icon="favicon.ico" />
         </File>
-        <File Id="IllallangiDropBoxStartMenuExeConfigFile" Source="$(var.bin)\Illallangi.DropBoxStartMenu.exe.config" />
+        <File Id="IllallangiDropBoxStartMenuExeConfigFile" Source="$(var.source)\Illallangi.DropBoxStartMenu.exe.config" />
         <RemoveFolder Id="ProgramMenuApplicationDelete"
                       Directory="ProgramMenuApplicationFolder"
                       On="uninstall" />
@@ -74,24 +72,24 @@
                       On="uninstall" />
       </Component>
       <Component Id="IllallangiFileBackedObjectDllComponent" Directory="SOFTWAREDIR">
-        <File Id="IllallangiFileBackedObjectDllFile" KeyPath="yes" Source="$(var.bin)\Illallangi.FileBackedObject.dll" />
+        <File Id="IllallangiFileBackedObjectDllFile" KeyPath="yes" Source="$(var.source)\Illallangi.FileBackedObject.dll" />
       </Component>
       <Component Id="IllallangiShellLinkDllComponent" Directory="SOFTWAREDIR">
-        <File Id="IllallangiShellLinkDllFile" KeyPath="yes" Source="$(var.bin)\Illallangi.ShellLink.dll" />
+        <File Id="IllallangiShellLinkDllFile" KeyPath="yes" Source="$(var.source)\Illallangi.ShellLink.dll" />
       </Component>
       <Component Id="log4netDllComponent" Directory="SOFTWAREDIR">
-        <File Id="log4netDllFile" KeyPath="yes" Source="$(var.bin)\log4net.dll" />
-        <File Id="log4netXmlFile" Source="$(var.bin)\log4net.xml" />
+        <File Id="log4netDllFile" KeyPath="yes" Source="$(var.source)\log4net.dll" />
+        <File Id="log4netXmlFile" Source="$(var.source)\log4net.xml" />
       </Component>
       <Component Id="NinjectDllComponent" Directory="SOFTWAREDIR">
-        <File Id="NinjectDllFile" KeyPath="yes" Source="$(var.bin)\Ninject.dll" />
-        <File Id="NinjectXmlFile" Source="$(var.bin)\Ninject.xml" />
+        <File Id="NinjectDllFile" KeyPath="yes" Source="$(var.source)\Ninject.dll" />
+        <File Id="NinjectXmlFile" Source="$(var.source)\Ninject.xml" />
       </Component>
       <Component Id="SystemDataSqliteDllComponent" Directory="SOFTWAREDIR">
-        <File Id="SystemDataSqliteDllFile" KeyPath="yes" Source="$(var.bin)\System.Data.SQLite.dll" />
+        <File Id="SystemDataSqliteDllFile" KeyPath="yes" Source="$(var.source)\System.Data.SQLite.dll" />
       </Component>
       <Component Id="SystemDataSqliteLinqDllComponent" Directory="SOFTWAREDIR">
-        <File Id="SystemDataSqliteLinqDllFile" KeyPath="yes" Source="$(var.bin)\System.Data.Sqlite.Linq.dll" />
+        <File Id="SystemDataSqliteLinqDllFile" KeyPath="yes" Source="$(var.source)\System.Data.Sqlite.Linq.dll" />
       </Component>
       <Component Id="RunRegistryEntries" Directory="TARGETDIR" Guid="{c1a54bd5-c918-4fab-b1d8-3d025ec14395}">
         <RegistryKey Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Run">
@@ -107,8 +105,10 @@
         </RegistryKey>
       </Component>
       
-      <ComponentRef Id='Empty' />
+    
+      <ComponentRef Id="Empty" />
     </Feature>
+
 
     <UI Id="Minimal">
       <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
