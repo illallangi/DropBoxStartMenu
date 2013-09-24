@@ -65,7 +65,15 @@ namespace Illallangi.DropBox.StartMenu
         {
             foreach (var shortcut in this.ShortcutSource.GetShortcuts())
             {
-                (new ShellShortcut(Path.Combine(this.Config.ProgramsPath, string.Format("{0}.{1}", shortcut.Name, "lnk")))
+                var shortcutPath = Path.Combine(this.Config.ProgramsPath, string.Format("{0}.{1}", shortcut.Name, "lnk"));
+                var shortcutDirectory = Path.GetDirectoryName(shortcutPath);
+                if (!Directory.Exists(shortcutDirectory))
+                {
+                    Directory.CreateDirectory(shortcutDirectory);
+                    this.Logger.InfoFormat("Created directory:\r\n\tPath:\t{0}", shortcutDirectory);
+                }
+
+                (new ShellShortcut(shortcutPath)
                                         {
                                             Path = Path.Combine(shortcut.Working, shortcut.Target),
                                             WorkingDirectory = shortcut.Working,
