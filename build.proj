@@ -57,7 +57,7 @@
 
     <Copy SourceFiles="$(SourceDir)\Illallangi.DropBoxStartMenu\bin\$(Configuration)\Illallangi.DropBoxStartMenu.exe"
           DestinationFolder="$(BuildDir)\bin" />
-    <Exec Command='"@(SignTool)" sign /sha1 $(Certificate) /sm /t http://timestamp.verisign.com/scripts/timstamp.dll "$(BuildDir)\bin\lib\Illallangi.DropBoxStartMenu.exe"'
+    <Exec Command='"@(SignTool)" sign /sha1 $(Certificate) /sm /t http://timestamp.verisign.com/scripts/timstamp.dll "$(BuildDir)\bin\Illallangi.DropBoxStartMenu.exe"'
           Condition="$(Certificate) != ''"/>
     
     <Copy SourceFiles="$(SourceDir)\Illallangi.DropBoxStartMenu\bin\$(Configuration)\Illallangi.DropBoxStartMenu.exe.config"
