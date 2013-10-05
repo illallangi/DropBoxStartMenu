@@ -18,6 +18,7 @@
   <ItemGroup>
     <Candle Include="$(MSBuildProjectDirectory)\tools\wix\candle.exe" />
     <Light Include="$(MSBuildProjectDirectory)\tools\wix\light.exe" />
+    <SignTool Include="$(MSBuildProjectDirectory)\tools\winsdk\signtool.exe" />
   </ItemGroup>
 
   <Target Name="Version">
@@ -106,6 +107,9 @@
     <Exec Command='"@(Candle)" -nologo -wx -dsource="$(BuildDir)\bin" -dfavicon="$(SourceDir)\Illallangi.DropBoxStartMenu\favicon.ico" -out "$(BuildDir)\wix\build.wixobj" "$(MSBuildProjectDirectory)\build.wxs"' />
 
     <Exec Command='"@(Light)" -nologo -wx -ext WixUIExtension -out "$(ArtifactsDir)\Illallangi Enterprises DropBox Start Menu Linker v$(Version).msi" -pdbout "$(BuildDir)\wix\build.wixpdb" "$(BuildDir)\wix\build.wixobj"' />
+
+    <Exec Command='"@(SignTool)" sign /sha1 $(Certificate) /sm /t http://timestamp.verisign.com/scripts/timstamp.dll "$(ArtifactsDir)\Illallangi Enterprises DropBox Start Menu Linker v$(Version).msi"'
+        Condition="$(Certificate) != ''"/>
   </Target>
 
   <Target Name="All" DependsOnTargets="Zip;MSI">
