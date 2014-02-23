@@ -5,19 +5,32 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Reflection;
+using System.IO;
+using System.Security.Principal;
+
+using Ninject;
 using Illallangi.ShellLink;
 
 namespace Illallangi.DropBox.StartMenu
 {
-    using System.IO;
-
-    using Ninject;
 
     /// <summary>
     /// The Program.
     /// </summary>
     public sealed class Program : IProgram
     {
+        [DllImport("kernel32.dll")]
+        static extern bool CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, SymbolicLink dwFlags);
+
+        enum SymbolicLink
+        {
+            File = 0,
+            Directory = 1
+        }
+
         #region Fields
 
         private log4net.ILog currentLogger;
@@ -87,9 +100,46 @@ namespace Illallangi.DropBox.StartMenu
                     shortcut.Target, 
                     shortcut.Working, 
                     shortcut.Arguments);
+
+                foreach (var link in shortcut.GetLinks())
+                {
+                    if (!Directory.Exists(link.Key))
+                    {
+                        if (!Program.IsElevated)
+                        {
+                            this.Logger.InfoFormat("Elevating");
+                            var startInfo = new ProcessStartInfo
+                            {
+                                UseShellExecute = true,
+                                WorkingDirectory = Environment.CurrentDirectory,
+                            };
+
+                            var uri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase);
+                            startInfo.FileName = uri.LocalPath;
+                            startInfo.Verb = "runas";
+                            Process p = Process.Start(startInfo);
+                            p.WaitForExit();
+                            return;
+                        }
+                        else
+                        {
+                            this.Logger.InfoFormat(@"Making link from ""{0}"" to ""{1}""", link.Key, link.Value);
+                            Program.CreateSymbolicLink(link.Key, link.Value, SymbolicLink.Directory);
+                        }
+                    }
+                }
             }
         }
 
+        public static bool IsElevated
+        {
+            get
+            {
+                var identity = WindowsIdentity.GetCurrent();
+                var principal = new WindowsPrincipal(identity);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+        }
         #endregion
 
         #region Properties
