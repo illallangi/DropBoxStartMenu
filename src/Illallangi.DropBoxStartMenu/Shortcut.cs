@@ -11,6 +11,7 @@ namespace Illallangi.DropBox.StartMenu
 
         private string currentName;
         private string currentTarget;
+        private string currentArguments;
         private string currentIconPath;
         private int? currentIconIndex;
 
@@ -26,6 +27,11 @@ namespace Illallangi.DropBox.StartMenu
         private string GetTarget()
         {
             return string.Format("{0}.{1}", this.Name, "exe");
+        }
+
+        private string GetArguments()
+        {
+            return string.Empty;
         }
 
         private string GetIconPath()
@@ -67,6 +73,19 @@ namespace Illallangi.DropBox.StartMenu
             set
             {
                 this.currentTarget = value;
+            }
+        }
+
+        [XmlAttribute("arguments")]
+        public string Arguments
+        {
+            get
+            {
+                return this.currentArguments ?? (this.currentArguments = this.GetArguments());
+            }
+            set
+            {
+                this.currentArguments = value;
             }
         }
 

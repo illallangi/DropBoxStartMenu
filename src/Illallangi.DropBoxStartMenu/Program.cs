@@ -79,9 +79,14 @@ namespace Illallangi.DropBox.StartMenu
                                             WorkingDirectory = shortcut.Working,
                                             IconPath = Path.Combine(shortcut.Working, shortcut.IconPath),
                                             IconIndex = shortcut.IconIndex,
+                                            Arguments = shortcut.Arguments,
                                         }).Save();
                 
-                this.Logger.InfoFormat("Created or Updated Shortcut:\r\n\tName:\t{0}\r\n\tTarget:\t{1}\r\n\tWorking:{2}", shortcut.Name, shortcut.Target, shortcut.Working);
+                this.Logger.InfoFormat("Created or Updated Shortcut:\r\n\tName:\t{0}\r\n\tTarget:\t{1}\r\n\tWorking:{2}\r\n\tArguments:{3}", 
+                    shortcut.Name, 
+                    shortcut.Target, 
+                    shortcut.Working, 
+                    shortcut.Arguments);
             }
         }
 
