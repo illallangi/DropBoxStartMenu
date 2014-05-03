@@ -1,7 +1,5 @@
 <Project ToolsVersion="4.0" DefaultTargets="All" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="$(MSBuildProjectDirectory)\tools\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
-  
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)'==''">Release</Configuration>
     <Version>$(BUILD_NUMBER)</Version>
@@ -12,7 +10,7 @@
     <SourceDir>$(MSBuildProjectDirectory)\src</SourceDir>
     <ArtifactsDir>$(MSBuildProjectDirectory)\artifacts</ArtifactsDir>
     <BuildDir>$(MSBuildProjectDirectory)\build</BuildDir>
-    
+    <MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\src\.build</MSBuildCommunityTasksPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +18,8 @@
     <Light Include="$(MSBuildProjectDirectory)\tools\wix\light.exe" />
     <SignTool Include="$(MSBuildProjectDirectory)\tools\winsdk\signtool.exe" />
   </ItemGroup>
+
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.targets"/>
 
   <Target Name="Version">
 
