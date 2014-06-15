@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="All" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <SolutionName>DropBoxStartMenu</SolutionName>
+    <CompanyName>Illallangi</CompanyName>
+    <CompanyTitle>Illallangi Enterprises</CompanyTitle>
+
+    <Configuration Condition="'$(Configuration)'==''">Release</Configuration>
+    <MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\.build</MSBuildCommunityTasksPath>
+    <Year>$([System.DateTime]::Now.ToString("yyyy"))</Year>
+    <ISO8601>$([System.DateTime]::Now.ToString("yyyy-MM-ddTHH:mm:ssZ"))</ISO8601>
+    <Version Condition="'$(Version)' == ''">$(APPVEYOR_BUILD_VERSION)</Version>
+    <Version Condition="'$(Version)' == ''">$(BUILD_NUMBER)</Version>
+    <Version Condition="'$(Version)' == ''">0.0.1</Version>
+
+    <BuildComment>Built on $(COMPUTERNAME) at $(ISO8601) from hash $(GitCommitHash)</BuildComment>
+    <BuildDir>$(MSBuildProjectDirectory)\..\build</BuildDir>
+    <ArtifactsDir>$(MSBuildProjectDirectory)\..\artifacts</ArtifactsDir>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.targets"/>
+
+  <ItemGroup>
+    <Candle Include="$(MSBuildProjectDirectory)\..\tools\wix\candle.exe" />
+    <Light Include="$(MSBuildProjectDirectory)\..\tools\wix\light.exe" />
+    <SignTool Include="$(MSBuildProjectDirectory)\..\tools\winsdk\signtool.exe" />
+  </ItemGroup>
+
+  <Target Name="Version">
+    <Message Text="=========== Version ===========" />
+
+    <GitVersion LocalPath="$(MSBuildProjectDirectory)" Condition=" '$(GitCommitHash)' == '' ">
+      <Output TaskParameter="CommitHash" PropertyName="GitCommitHash" />
+    </GitVersion>
+
+    <AssemblyInfo CodeLanguage="CS"
+                  OutputFile="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\Properties\AssemblyInfo.cs"
+                  AssemblyTitle="$(CompanyTitle) $(SolutionName)"
+                  AssemblyDescription=""
+                  AssemblyCompany="$(CompanyTitle)"
+                  AssemblyProduct="$(CompanyTitle) $(SolutionName)"
+                  AssemblyCopyright="Copyright © $(CompanyTitle) $(Year)"
+                  ComVisible="false"
+                  AssemblyInformationalVersion="$(BuildComment)"
+                  Guid="5bd68165-52d5-4190-9640-fc2d4e197956"
+                  AssemblyVersion="$(Version)"
+                  AssemblyFileVersion="$(Version)" 
+                  Condition="$(Version) != '0.0.1'" />
+  </Target>
+
+  <Target Name="Compile"
+          DependsOnTargets="Version">
+    <Message Text="=========== Compile ===========" Importance="High" />
+
+    <MSBuild Projects="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName).sln"
+             Properties="Configuration=$(Configuration)"
+             Targets="Rebuild" />
+  </Target>
+
+  <Target Name="Copy" DependsOnTargets="Compile">
+    <Message Text="=========== Copy ===========" Importance="High" />
+
+    <MakeDir Directories="$(BuildDir)\bin" />
+
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\bin\$(Configuration)\Illallangi.DropBoxStartMenu.exe"
+          DestinationFolder="$(BuildDir)\bin" />
+    <Exec Command='"@(SignTool)" sign /sha1 $(Certificate) /sm /t http://timestamp.verisign.com/scripts/timstamp.dll "$(BuildDir)\bin\Illallangi.DropBoxStartMenu.exe"'
+          Condition="$(Certificate) != ''"/>
+    
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\bin\$(Configuration)\Illallangi.DropBoxStartMenu.exe.config"
+          DestinationFolder="$(BuildDir)\bin" />
+
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\bin\$(Configuration)\Illallangi.FileBackedObject.dll"
+          DestinationFolder="$(BuildDir)\bin" />
+
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\bin\$(Configuration)\Illallangi.ShellLink.dll"
+          DestinationFolder="$(BuildDir)\bin" />
+
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\bin\$(Configuration)\log4net.dll"
+          DestinationFolder="$(BuildDir)\bin" />
+
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\bin\$(Configuration)\log4net.xml"
+          DestinationFolder="$(BuildDir)\bin" />
+
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\bin\$(Configuration)\Ninject.dll"
+          DestinationFolder="$(BuildDir)\bin" />
+
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\bin\$(Configuration)\Ninject.xml"
+          DestinationFolder="$(BuildDir)\bin" />
+
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\bin\$(Configuration)\System.Data.SQLite.dll"
+          DestinationFolder="$(BuildDir)\bin" />
+
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\bin\$(Configuration)\System.Data.Sqlite.Linq.dll"
+          DestinationFolder="$(BuildDir)\bin" />
+
+  </Target>
+
+  <Target Name="Zip" DependsOnTargets="Copy">
+    <Message Text="=========== Zip ===========" Importance="High" />
+
+    <CreateItem Include="$(BuildDir)\bin\*.*" >
+      <Output ItemName="ZipFiles" TaskParameter="Include"/>
+    </CreateItem>
+
+    <Zip ZipFileName="$(ArtifactsDir)\Illallangi Enterprises DropBox Start Menu Linker v$(Version).zip" WorkingDirectory="$(BuildDir)\bin" Files="@(ZipFiles)" />
+  </Target>
+
+  <Target Name="MSI" DependsOnTargets="Copy">
+    <Message Text="=========== MSI ===========" Importance="High" />
+
+    <MakeDir Directories="$(BuildDir)\wix" />
+
+    <Exec Command='"@(Candle)" -nologo -wx -dsource="$(BuildDir)\bin" -dfavicon="$(MSBuildProjectDirectory)\$(CompanyName).$(SolutionName)\favicon.ico" -out "$(BuildDir)\wix\build.wixobj" "$(MSBuildProjectDirectory)\build.wxs"' />
+
+    <Exec Command='"@(Light)" -nologo -wx -ext WixUIExtension -out "$(ArtifactsDir)\Illallangi Enterprises DropBox Start Menu Linker v$(Version).msi" -pdbout "$(BuildDir)\wix\build.wixpdb" "$(BuildDir)\wix\build.wixobj"' />
+
+    <Exec Command='"@(SignTool)" sign /sha1 $(Certificate) /sm /t http://timestamp.verisign.com/scripts/timstamp.dll "$(ArtifactsDir)\Illallangi Enterprises DropBox Start Menu Linker v$(Version).msi"'
+        Condition="$(Certificate) != ''"/>
+  </Target>
+
+  <Target Name="All" DependsOnTargets="Zip;MSI">
+
+    <Message Text="=========== All Done ===========" Importance="High" />
+
+  </Target>
+
+</Project>
