@@ -137,7 +137,10 @@
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Git.GitVersion" />
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Git.GitBranch" />
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Git.GitDescribe" />
+<<<<<<< HEAD:src/.build/MSBuild.Community.Tasks.targets
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Git.GitPendingChanges" />
+=======
+>>>>>>> 0e7addd595bd4d4c22028b8843ea5fc8121ca316:src/.build/MSBuild.Community.Tasks.targets
 
   <ItemGroup>
     <FxCopRuleAssemblies Include="UsageRules.dll"/>

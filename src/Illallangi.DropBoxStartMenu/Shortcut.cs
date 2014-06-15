@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -18,6 +19,20 @@ namespace Illallangi.DropBox.StartMenu
         #endregion
 
         #region Methods
+
+        public IEnumerable<KeyValuePair<string, string>> GetLinks()
+        {
+            foreach (var linkedFolder in this.LinkedFolders)
+            {
+                if (Directory.Exists(linkedFolder.Key))
+                {
+                    foreach (var path in Directory.GetDirectories(linkedFolder.Key))
+                    {
+                        yield return new KeyValuePair<string, string>(Path.Combine(linkedFolder.Value, Path.GetFileName(path)), path);
+                    }
+                }
+            }
+        }
 
         private string GetName()
         {
@@ -132,6 +147,44 @@ namespace Illallangi.DropBox.StartMenu
                 this.currentIconIndex = value;
             }
         }
+
+        [XmlIgnore]
+        public string Folder
+        {
+            get
+            {
+                return Path.GetDirectoryName(this.FileBackedSource);
+            }
+        }
+
+        [XmlIgnore]
+        public IEnumerable<KeyValuePair<string, string>> LinkedFolders
+        {
+            get
+            {
+                yield return new KeyValuePair<string, string>(this.AppData, Environment.ExpandEnvironmentVariables(@"%appdata%"));
+                yield return new KeyValuePair<string, string>(this.LocalAppData, Environment.ExpandEnvironmentVariables(@"%localappdata%"));
+
+            }
+        }
+        [XmlIgnore]
+        public string AppData
+        {
+            get
+            {
+                return Path.Combine(this.Folder, "AppData");
+            }
+        }
+
+        [XmlIgnore]
+        public string LocalAppData
+        {
+            get
+            {
+                return Path.Combine(this.Folder, "LocalAppData");
+            }
+        }
+
 
         #endregion
     }
